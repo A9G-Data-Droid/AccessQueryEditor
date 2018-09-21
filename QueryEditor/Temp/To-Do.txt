@@ -1,0 +1,30 @@
+﻿
+1 - find a way to color the $ after  function names like (Date$ ,Chr$ ....)
+	(it's messed up cuz we color functions before)
+
+
+---------------------------
+ 
+ 
+ -----------------------
+ -----------------------
+ for some reason sometimes the IDE makes some mistake and deletes 
+ some parts of the code that add some sub items to some main items (like menus and toolstrips)
+ so .....
+ next are some code snippets to return the tools the way they were....
+
+ Me.mnu_Main.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnu_File, Me.mnu_View, Me.mnu_Edit, Me.mnu_Format, Me.mnu_Output, Me.mnu_Query, Me.mnu_Help})
+    Me.mnu_File.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnu_File_NewQuery, Me.mnu_FileSep0, Me.mnu_Connect, Me.mnu_FileSep1, Me.mnu_Open, Me.mnu_SaveAs, Me.mnu_Save, Me.mnu_FileSep2, Me.mnu_Exit})
+	Me.mnu_View.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnu_ObjectsBrowser, Me.nu_ShowOutPutPanel})
+	Me.mnu_Edit.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnu_Undo, Me.mnu_Redo, Me.mnu_EditSep0, Me.mnu_Cut, Me.mnu_Copy, Me.mnu_Paste, Me.mnu_EditSep1, Me.mnu_SelectAll, Me.mnu_Find, Me.mnu_Replace})
+	Me.mnu_Format.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnu_WordWrap, Me.mnu_Font,Me.mnu_EditorOptions})
+	Me.mnu_Query.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnu_Exec, Me.mnu_Query_Parameters, Me.mnu_QuerySep0, Me.mnu_Convert2Code})
+	Me.mnu_Help.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnu_TutorialFeatures, Me.mnu_About})	
+ Me.MainToolStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolBar_Connect, Me.ToolBar_Sep0, Me.ToolBar_Open, Me.ToolBar_Save, Me.ToolBar_Sep1, Me.ToolBar_Cut, Me.ToolBar_Copy, Me.ToolBar_Paste, Me.ToolBar_Sep2, Me.btn_Exec})
+ Me.MainStatusStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.status_CurTask, Me.status_OutPutCount, Me.status_CurLine, Me.status_CurCol, Me.Status_Ins_Ovr, Me.status_Connection})
+
+Me.CntxtMnu_TrView_dbObjects_DB.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.Cmnu_DB_Refresh, Me.Cmnu_DB_Connect})
+Me.CntxtMnu_TrView_dbObjects_Tblqry.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.CntxtMnu_TrView_dbObjects_TblQry_GenSelectALLScript, Me.CntxtMnu_TrView_dbObjects_Tblqry_GenDrop})
+Me.ContextMnu_RText.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.Cmnu_Undo, Me.Cmnu_Redo, Me.Cmnu_Sep0, Me.Cmnu_Cut, Me.Cmnu_Copy, Me.Cmnu_Paste, Me.Cmnu_Sep1, Me.Cmnu_EditorOptions})
+-----------------
+-----------------
