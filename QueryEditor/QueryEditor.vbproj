@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -15,8 +15,12 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <OldToolsVersion>2.0</OldToolsVersion>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <OptionInfer>On</OptionInfer>
+    <ApplicationIcon>AppIco.ico</ApplicationIcon>
+    <TargetFrameworkProfile />
     <PublishUrl>http://localhost/QueryEditor/</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -29,11 +33,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <OptionInfer>On</OptionInfer>
-    <ApplicationIcon>AppIco.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,7 +43,9 @@
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>QueryEditor.xml</DocumentationFile>
-    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,9 +54,13 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>QueryEditor.xml</DocumentationFile>
-    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -64,6 +71,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -78,74 +86,73 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\DataBase.vb" />
-    <Compile Include="Classes\Excel.vb" />
-    <Compile Include="Forms\AboutBox.designer.vb">
+    <Compile Include="Classes\ExportData.vb" />
+    <Compile Include="AboutBox.designer.vb">
       <DependentUpon>AboutBox.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\AboutBox.vb">
+    <Compile Include="AboutBox.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frm_FindReplace.designer.vb">
-      <DependentUpon>frm_FindReplace.vb</DependentUpon>
+    <Compile Include="FindReplace.designer.vb">
+      <DependentUpon>FindReplace.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frm_FindReplace.vb">
+    <Compile Include="FindReplace.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frm_NewQuery.Designer.vb">
-      <DependentUpon>frm_NewQuery.vb</DependentUpon>
+    <Compile Include="NewQuery.Designer.vb">
+      <DependentUpon>NewQuery.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frm_NewQuery.vb">
+    <Compile Include="NewQuery.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Classes\NodeBindingData.vb" />
-    <Compile Include="Forms\frm_Waiting.Designer.vb">
-      <DependentUpon>frm_Waiting.vb</DependentUpon>
+    <Compile Include="Working.Designer.vb">
+      <DependentUpon>Working.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frm_Waiting.vb">
+    <Compile Include="Working.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Inherited Controls\DevRichTextBox.vb">
+    <Compile Include="InheritedControls\DevRichTextBox.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Inherited Controls\DevTreeView.vb">
+    <Compile Include="InheritedControls\DevTreeView.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Forms\frm_UDL.Designer.vb">
-      <DependentUpon>frm_UDL.vb</DependentUpon>
+    <Compile Include="ConnectionDialog.Designer.vb">
+      <DependentUpon>ConnectionDialog.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frm_UDL.vb">
+    <Compile Include="ConnectionDialog.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frm_AddParams.Designer.vb">
-      <DependentUpon>frm_AddParams.vb</DependentUpon>
+    <Compile Include="AddParams.Designer.vb">
+      <DependentUpon>AddParams.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frm_AddParams.vb">
+    <Compile Include="AddParams.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frm_EditorOptions.Designer.vb">
-      <DependentUpon>frm_EditorOptions.vb</DependentUpon>
+    <Compile Include="EditorOptions.Designer.vb">
+      <DependentUpon>EditorOptions.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frm_EditorOptions.vb">
+    <Compile Include="EditorOptions.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frm_Editor.vb">
+    <Compile Include="Editor.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frm_Editor.Designer.vb">
-      <DependentUpon>frm_Editor.vb</DependentUpon>
+    <Compile Include="Editor.Designer.vb">
+      <DependentUpon>Editor.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frm_Text2Code.designer.vb">
-      <DependentUpon>frm_Text2Code.vb</DependentUpon>
+    <Compile Include="Text2Code.designer.vb">
+      <DependentUpon>Text2Code.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frm_Text2Code.vb">
+    <Compile Include="Text2Code.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Classes\SqlQuery.vb" />
-    <Compile Include="Inherited Controls\DevDataGridView.vb">
+    <Compile Include="InheritedControls\DevDataGridView.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Modules\Mod_General.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -163,38 +170,38 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\AboutBox.resx">
+    <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frm_FindReplace.resx">
-      <DependentUpon>frm_FindReplace.vb</DependentUpon>
+    <EmbeddedResource Include="FindReplace.resx">
+      <DependentUpon>FindReplace.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frm_NewQuery.resx">
-      <DependentUpon>frm_NewQuery.vb</DependentUpon>
+    <EmbeddedResource Include="NewQuery.resx">
+      <DependentUpon>NewQuery.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frm_UDL.resx">
-      <DependentUpon>frm_UDL.vb</DependentUpon>
+    <EmbeddedResource Include="ConnectionDialog.resx">
+      <DependentUpon>ConnectionDialog.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frm_AddParams.resx">
-      <DependentUpon>frm_AddParams.vb</DependentUpon>
+    <EmbeddedResource Include="AddParams.resx">
+      <DependentUpon>AddParams.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frm_EditorOptions.resx">
-      <DependentUpon>frm_EditorOptions.vb</DependentUpon>
+    <EmbeddedResource Include="EditorOptions.resx">
+      <DependentUpon>EditorOptions.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frm_Editor.resx">
+    <EmbeddedResource Include="Editor.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>frm_Editor.vb</DependentUpon>
+      <DependentUpon>Editor.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frm_Text2Code.resx">
-      <DependentUpon>frm_Text2Code.vb</DependentUpon>
+    <EmbeddedResource Include="Text2Code.resx">
+      <DependentUpon>Text2Code.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frm_Waiting.resx">
-      <DependentUpon>frm_Waiting.vb</DependentUpon>
+    <EmbeddedResource Include="Working.resx">
+      <DependentUpon>Working.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -231,6 +238,11 @@
       <ProductName>.NET Framework 3.5</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -264,6 +276,7 @@
       <Isolated>False</Isolated>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

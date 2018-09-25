@@ -1,5 +1,4 @@
-﻿Imports System
-Imports System.Reflection
+﻿Imports System.Reflection
 Imports System.Runtime.InteropServices
 
 ' General Information about an assembly is controlled through the following 
@@ -8,17 +7,17 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("Query Editor")> 
-<Assembly: AssemblyDescription("An application helps you creating Queries for MS Access DataBases, it provieds plenty of features like Exploring DB schema , Coloring Keywords, Auto Completion , .......etc")> 
-<Assembly: AssemblyCompany("URYICO")> 
-<Assembly: AssemblyProduct("Query Editor")> 
-<Assembly: AssemblyCopyright("GPL")> 
-<Assembly: AssemblyTrademark("")> 
+<Assembly: AssemblyTitle("Query Editor")>
+<Assembly: AssemblyDescription ("An application helps you creating Queries for MS Access DataBases, it provieds plenty of features like Exploring DB schema , Coloring Keywords, Auto Completion , .......etc")>
+<Assembly: AssemblyCompany("URYICO")>
+<Assembly: AssemblyProduct("Query Editor")>
+<Assembly: AssemblyCopyright("GPL")>
+<Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("8b3645b0-712a-457a-9dac-2e4dcb4961cb")> 
+<Assembly: Guid("8b3645b0-712a-457a-9dac-2e4dcb4961cb")>
 
 ' Version information for an assembly consists of the following four values:
 '
@@ -31,5 +30,5 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.0.0")> 
-<Assembly: AssemblyFileVersion("1.0.0.0")> 
+<Assembly: AssemblyVersion("1.0.0.0")>
+<Assembly: AssemblyFileVersion("1.0.0.0")>
