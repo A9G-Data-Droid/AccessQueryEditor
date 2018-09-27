@@ -7,12 +7,12 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("Query Editor")>
-<Assembly: AssemblyDescription ("An application helps you creating Queries for MS Access DataBases, it provieds plenty of features like Exploring DB schema , Coloring Keywords, Auto Completion , .......etc")>
+<Assembly: AssemblyTitle("Access Query Editor")>
+<Assembly: AssemblyDescription ("An application that helps you create Queries for MS Access DataBases.")>
 <Assembly: AssemblyCompany("URYICO")>
-<Assembly: AssemblyProduct("Query Editor")>
-<Assembly: AssemblyCopyright("GPL")>
-<Assembly: AssemblyTrademark("")>
+<Assembly: AssemblyProduct("AccessQueryEditor")>
+<Assembly: AssemblyCopyright("GPL3")>
+<Assembly: AssemblyTrademark("Adapted from code written by Yasser Daheek.")>
 
 <Assembly: ComVisible(False)>
 
@@ -30,5 +30,4 @@ Imports System.Runtime.InteropServices
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.0.0")>
-<Assembly: AssemblyFileVersion("1.0.0.0")>
+<Assembly: AssemblyVersion("0.1.*")>
