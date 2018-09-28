@@ -1,0 +1,18 @@
+version: 0.1.{build}
+image: Visual Studio 2017
+build:
+  verbosity: minimal
+deploy:
+- provider: GitHub
+  description: Wouldn't it be great if binaries were magically available for download?
+  auth_token:
+    secure: 176TIG6PNLpTB9vDUPfJ6RQUkgTot23O8GckvEuKXYQtIG+2urE0OGTc7v0y93XSN9E7EEAxsvTVgrJL/7+V5C4VX8TwICzHd8bbhmt2swE=
+notifications:
+- provider: Email
+  to:
+  - akauffman@cet.aero
+  subject: AppVeyor for AccessQueryEditor
+  message: Something has happen
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: false
