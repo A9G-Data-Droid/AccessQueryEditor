@@ -1,18 +1,32 @@
 version: 0.1.{build}
+pull_requests:
+  do_not_increment_build_number: true
 image: Visual Studio 2017
 build:
-  verbosity: minimal
+  verbosity: normal
+artifacts:
+- path: bin\$(configuration)\*
+  name: Full Build
 deploy:
 - provider: GitHub
-  description: Wouldn't it be great if binaries were magically available for download?
+  description: I am testing automated releases using AppVeyor
   auth_token:
     secure: 1Dzj/ZfH3EBVsuVHw0Ez/zNxIql3G8gwr9iaO2Z1Q1IeH3xHRPzGmBQljDgsdyLL
+  artifact: Full Build
 notifications:
 - provider: Email
   to:
   - akauffman@cet.aero
-  subject: AppVeyor for AccessQueryEditor
-  message: Something has happen
+  subject: Hooray! AppVeyor for AccessQueryEditor
+  message: Build success
   on_build_success: true
+  on_build_failure: false
+  on_build_status_changed: false
+- provider: Email
+  to:
+  - akauffman@cet.aero
+  subject: Boo! AppVeyor for AccessQueryEditor
+  message: Build failure
+  on_build_success: false
   on_build_failure: true
   on_build_status_changed: false
