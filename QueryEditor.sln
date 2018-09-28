@@ -7,14 +7,14 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "QueryEditor", "QueryEditor\
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E7EB606C-0446-4D46-9655-39DC2424C60A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7EB606C-0446-4D46-9655-39DC2424C60A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7EB606C-0446-4D46-9655-39DC2424C60A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7EB606C-0446-4D46-9655-39DC2424C60A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7EB606C-0446-4D46-9655-39DC2424C60A}.Debug|x86.ActiveCfg = Debug|x86
+		{E7EB606C-0446-4D46-9655-39DC2424C60A}.Debug|x86.Build.0 = Debug|x86
+		{E7EB606C-0446-4D46-9655-39DC2424C60A}.Release|x86.ActiveCfg = Release|x86
+		{E7EB606C-0446-4D46-9655-39DC2424C60A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
