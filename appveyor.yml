@@ -13,14 +13,10 @@ build:
 after_build:
 
 - cmd: >-
-
-    DIR "%APPVEYOR_BUILD_FOLDER%"
-
     cd && dir
-
-    DIR bin\x86\Release\*.exe
+    
 artifacts:
-- path: bin\x86\Release\*.exe
+- path: QueryEditor\bin\x86\Release\*
   name: Binary
 deploy:
 - provider: GitHub
