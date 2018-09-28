@@ -1,7 +1,13 @@
 version: 0.1.{build}
 pull_requests:
   do_not_increment_build_number: true
+branches:
+  only:
+  - master
+  - next
 image: Visual Studio 2017
+configuration: Release
+platform: x86
 build:
   verbosity: normal
 artifacts:
