@@ -17,7 +17,6 @@
                     Where Not NotWanted.Contains(dgvRow.Cells(0).Value) And
                           Not NotWanted.Contains(dgvRow.Cells(1).Value)
 
-
                 Editor.CurrentDb.Query.QueryParams.Add(CType(Row.Cells(0).Value, String),
                                                 CType(Row.Cells(1).Value, String))
             Next

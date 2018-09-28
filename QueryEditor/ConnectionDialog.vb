@@ -42,7 +42,7 @@ Public Class ConnectionDialog
 
     Private Sub Chk_ShowPW_Chars_CheckedChanged(sender As Object, e As EventArgs) _
         Handles chk_ShowPW_Chars.CheckedChanged
-        txt_PW.PasswordChar = If(chk_ShowPW_Chars.Checked, "", "*")
+        txt_PW.PasswordChar = If(chk_ShowPW_Chars.Checked, Char.MinValue, ChrW(42))
     End Sub
 
     Private Sub Btn_Browse_Click(sender As Object, e As EventArgs) Handles btn_Browse.Click

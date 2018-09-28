@@ -66,7 +66,7 @@ Namespace ColoringWords
             '''     when a new state is added to the end of Redo-Undo list it turns
             '''     to pre-last state (the one that is before the last one)
             ''' </summary>
-            Private _currentIndex As Byte
+            Private _currentIndex As Integer
 
 
             ''' <summary>
@@ -256,7 +256,7 @@ Namespace ColoringWords
 
                 End If
 
-                SelectedText = _autoComplete.SelectedItem
+                SelectedText = _autoComplete.SelectedItem.ToString()
 
                 _autoComplete.Hide()
                 Focus()
@@ -289,8 +289,8 @@ Namespace ColoringWords
                 newPos.X = If(caretPoint.X + .Width + 10 > Width,
                               Width - .Width, caretPoint.X)
 
-                newPos.Y = If(caretPoint.Y + .Height + 10 + sizeTmp.Height > Height,
-                              Height - .Height - 10, caretPoint.Y + sizeTmp.Height)
+                newPos.Y = CInt(If(caretPoint.Y + .Height + 10 + sizeTmp.Height > Height,
+                              Height - .Height - 10, caretPoint.Y + sizeTmp.Height))
 
                 '--------------------
 
@@ -519,11 +519,11 @@ Namespace ColoringWords
             Dim prevSpace As Integer
             Dim afterSpace As Integer
 
-            Dim tet2Color '= ""
+            Dim text2Color as String
             If ColorAll Then
                 prevSpace = 0
                 'afterSpace = Me.Text.Length '- 1
-                tet2Color = Text
+                text2Color = Text
             Else
                 'here we're gonna color the Previous Two word and the next Two words
 
@@ -532,17 +532,17 @@ Namespace ColoringWords
 
                 afterSpace = NextSpace 'get the First NextSpace
                 afterSpace = NextSpace(afterSpace) 'get the Second NextSpace
-                tet2Color = Text.Substring(prevSpace, afterSpace - prevSpace)
+                text2Color = Text.Substring(prevSpace, afterSpace - prevSpace)
             End If
 
             'Dim Tet2Color As String = Me.Text.Substring(_PrevSpace, _
             '                                            _NextSpace - _PrevSpace)
-            If tet2Color.Length <> 0 Then
-                ColorSection(prevSpace, tet2Color.Length, Color.Black)
+            If text2Color.Length <> 0 Then
+                ColorSection(prevSpace, text2Color.Length, Color.Black)
                 'Dim t = Now
                 For Each coloredWord In ColoredWords.GetColoredWords
                     Try
-                        For Each wordMatch As Match In Regex.Matches(tet2Color,
+                        For Each wordMatch As Match In Regex.Matches(text2Color,
                                                                 coloredWord.SearchPattern,
                                                                 searchOption)
 

@@ -19,11 +19,11 @@ Public Class Editor
 
     Private readonly Property TrimmedSql As String
         Get
-            trimmedSql = Invoke(Function() As String
+            trimmedSql = CType(Invoke(Function() As String
                 Return If(Rtext_Doc.SelectionLength > 0,
                           Rtext_Doc.SelectedText,
                           Rtext_Doc.Text).Trim()
-            End Function)
+            End Function), String)
         End Get
     End Property
 
@@ -748,9 +748,8 @@ Public Class Editor
                 .Title = "Select the location and the name of the File to export to"
 
                 If .ShowDialog = DialogResult.OK Then
-                    'MsgBox("This operation could take a while..." &
-                    '       Environment.NewLine & Environment.NewLine &
-                    '       "Please wait...", , "Caution")
+                    ' The following declaration must match the Handles type above
+                    Dim sourceMenuItem = CType(sender, ToolStripMenuItem)
 
                     Cursor = Cursors.WaitCursor
                     dgv_OutPut.Cursor = Cursors.WaitCursor
@@ -761,7 +760,7 @@ Public Class Editor
                     _progressMessage.Show
                     Try 'Export method
                         Dim dt = CType(dgv_OutPut.DataSource, DataTable)
-                        Select Case sender.Name
+                        Select Case sourceMenuItem.Name
                             Case mnu_Export2ExcelByExcelApp.Name
                                 Await Task.Run(Function() ExportData.ExportByExcel(.FileName, dt))
 
@@ -780,6 +779,9 @@ Public Class Editor
                                 If ExportData.ExportByXML(.FileName, dt) Then
                                     MsgBox("Creating XML File Done", MsgBoxStyle.Information, "Success")
                                 End If
+
+                            Case Else
+                                MsgBox("Error: Can't determine export method?", MsgBoxStyle.Exclamation, "Failure")
                         End Select
                     Catch ex As Exception
                         MsgBox("Error writing to Excel file." &

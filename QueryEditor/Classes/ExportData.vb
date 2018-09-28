@@ -44,7 +44,7 @@ Public Class ExportData
 
         Try 'to make Excel sheet
             excelExport.Workbooks.Add
-            Dim excelSheet As Worksheet = excelExport.ActiveSheet
+            Dim excelSheet As Worksheet = CType(excelExport.ActiveSheet, Worksheet)
             excelSheet.Name = exportDataTable.TableName
 
             ' Write headers
@@ -200,7 +200,7 @@ Public Class ExportData
                             sheetCount += 1
                             .Write("</Table>")
                             .Write(" </Worksheet>")
-                            .Write("<Worksheet ss:Name=""Sheet" + sheetCount + """>")
+                            .Write("<Worksheet ss:Name=""Sheet" & sheetCount & """>")
                             .Write("<Table>")
                         End If
 

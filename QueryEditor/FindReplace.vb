@@ -22,7 +22,7 @@ Public Class FindReplace
     '''     user can't change the Height , But I can ,
     '''     so this is used to set the height that user has to stick with
     ''' </summary>
-    Dim _forcedHeight As Single = 0
+    Dim _forcedHeight As Integer = 0
 
     ''' <summary>
     '''     user can't change the Height , But I can ,
@@ -186,7 +186,7 @@ Public Class FindReplace
 
 #Region "btn_ExpandOptions"
 
-    Private Sub btn_ExpandOptions_Click(sender As Object, e As EventArgs) Handles btn_ExpandOptions.Click
+    Private Sub Btn_ExpandOptions_Click(sender As Object, e As EventArgs) Handles btn_ExpandOptions.Click
         btn_ExpandOptions.Enabled = False ' prevent user from clicking again till I finish
         _heightChangeable = True
         'Me.MinimumSize = New Size(0, 0) ' to be able to minimize it the way I want
