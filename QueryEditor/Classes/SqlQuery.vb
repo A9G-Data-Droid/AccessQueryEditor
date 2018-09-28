@@ -1,9 +1,8 @@
-﻿
-Imports System.Text.RegularExpressions
+﻿Imports System.Text.RegularExpressions
 Imports QueryEditor.ColoringWords
 
 Namespace Queries
-    <Flags()> _
+    <Flags>
     Public Enum SqlQueryType
         ParameterizedSqlQuery = 1
         SelectSqlQuery = 2
@@ -12,12 +11,12 @@ Namespace Queries
     End Enum
 
     Public Class SqlQuery
-        Private _AllSql As String = ""
-        Private _NoCommentsSql As String = ""
+        Private _allSql As String = ""
+        Private _noCommentsSql As String = ""
 
         ''' <summary> Get or Sets the sql statement text </summary>
-        ''' <param name="Commented">determine if the returned value will be with comments or not</param> 
-        Public Property Sql(Optional ByVal Commented As Boolean = False) As String
+        ''' <param name="commented">determine if the returned value will be with comments or not</param>
+        Public Property Sql(Optional ByVal commented As Boolean = False) As String
             Get
                 If Commented Then
                     Return _AllSql
@@ -26,35 +25,34 @@ Namespace Queries
                 End If
             End Get
 
-            Set(ByVal value As String)
+            Private Set
                 If _AllSql <> value Then
                     _AllSql = value.Trim
 
                     'next is to remove the commented statements
-                    _NoCommentsSql = Regex.Replace(_AllSql, _
-                                       ColoredWords.GetCommentsPattern, _
-                                        " ", _
-                                        RegexOptions.IgnoreCase Or RegexOptions.IgnorePatternWhitespace).Trim
-
-
+                    _NoCommentsSql = Regex.Replace(_AllSql,
+                                                   ColoredWords.GetCommentsPattern,
+                                                   " ",
+                                                   RegexOptions.IgnoreCase Or RegexOptions.IgnorePatternWhitespace).Trim
                 End If
             End Set
         End Property
 
-        Public Sub New(ByVal sql As String)
+        Public Sub New(sql As String)
             Me.Sql = sql
         End Sub
 
-        ''' <summary>Gets a value indicating the type of the SQL statement.
-        ''' it returns one of the following values : 
-        ''' a ( SELECT ) statement or a ( NonQuery ) Statement 
-        ''' or a( Parameterized SELECT ) Statement or a ( Parameterized NonQuery ) Statement. 
+        ''' <summary>
+        '''     Gets a value indicating the type of the SQL statement.
+        '''     it returns one of the following values :
+        '''     a ( SELECT ) statement or a ( NonQuery ) Statement
+        '''     or a( Parameterized SELECT ) Statement or a ( Parameterized NonQuery ) Statement.
         ''' </summary>
-        Public ReadOnly Property QueryType() As SqlQueryType
+        Public ReadOnly Property QueryType As SqlQueryType
             Get
-                Dim SearchOption = RegexOptions.IgnorePatternWhitespace Or RegexOptions.IgnoreCase
+                Const searchOption As RegexOptions = RegexOptions.IgnorePatternWhitespace Or RegexOptions.IgnoreCase
 
-                If Regex.IsMatch(_NoCommentsSql, "^SELECT|TRANSFORM", SearchOption) Then 'it's a SELECT
+                If Regex.IsMatch(_NoCommentsSql, "^SELECT|TRANSFORM", searchOption) Then 'it's a SELECT
                     Return SqlQueryType.SelectSqlQuery
 
 
@@ -62,39 +60,34 @@ Namespace Queries
 
                     'next is to see what is after the parameters 
                     'is it a SELECT or a NoneQuerySqlQuery
-                    Dim WithNoParameters = Regex.Replace(_NoCommentsSql, _
-                                                         "^PARAMETERS[^'""]*?;", "", _
-                                                         SearchOption).Trim
+                    Dim withNoParameters = Regex.Replace(_NoCommentsSql,
+                                                         "^PARAMETERS[^'""]*?;", "",
+                                                         searchOption).Trim
 
 
-                    If Regex.IsMatch(WithNoParameters, "^SELECT|TRANSFORM", SearchOption) Then
+                    If Regex.IsMatch(WithNoParameters, "^SELECT|TRANSFORM", searchOption) Then
                         Return SqlQueryType.ParameterizedSqlQuery Or SqlQueryType.SelectSqlQuery
                     Else
                         Return SqlQueryType.ParameterizedSqlQuery Or SqlQueryType.NoneQuerySqlQuery
                     End If
-
-
                 Else 'it's not a Parameterized neither a SELECT then it's a NoneQuerySqlQuery
                     Return SqlQueryType.NoneQuerySqlQuery
                 End If
-
-
-
             End Get
         End Property
 
-
-
 #Region "Dealing with the Parameters"
+
         ''' <summary>the internal object of the property QueryParams</summary>
-        Private _QueryParams As New Generic.Dictionary(Of String, String)
+        Private _queryParams As New Dictionary(Of String, String)
 
         ''' <summary>Gets or Sets the query parameters that will be used for Parameterized queries</summary>
-        Public Property QueryParams() As Generic.Dictionary(Of String, String)
+        Public Property QueryParams As Dictionary(Of String, String)
             Get
                 Return _QueryParams
             End Get
-            Set(ByVal value As Generic.Dictionary(Of String, String))
+
+            Set
                 If _QueryParams IsNot value Then
                     _QueryParams.Clear()
                     _QueryParams = Nothing
@@ -104,27 +97,23 @@ Namespace Queries
         End Property
 
         ''' <summary>
-        ''' gets a list of the available parameters that start with a given word
+        '''     gets a list of the available parameters that start with a given word
         ''' </summary>
         ''' <param name="word">the word to get a [Parameters Auto Complete list] for</param>
-        Public Function GetParamsAutoCompleteList(ByVal word As String) As IEnumerable(Of String)
-            Dim Rslt As IEnumerable(Of String)
+        Public Function GetParamsAutoCompleteList(word As String) As IEnumerable(Of String)
+            Dim enumerableResult As IEnumerable(Of String)
             Try
-
-                Rslt = From P In QueryParams _
-                       Where P.Key.StartsWith(word, StringComparison.OrdinalIgnoreCase) _
-                       Select "[" & P.Key & "]"
+                enumerableResult = From p In QueryParams _
+                    Where P.Key.StartsWith(word, StringComparison.OrdinalIgnoreCase) _
+                    Select "[" & P.Key & "]"
 
             Catch ex As Exception
-                Rslt = From x In New String() {} ' to not return a Nothing
+                enumerableResult = From x In New String() {} ' to not return a Nothing
             End Try
 
-            Return Rslt
-
+            Return enumerableResult
         End Function
 
 #End Region
-
     End Class
-
 End Namespace

@@ -1,405 +1,337 @@
 ﻿Imports System.Data.OleDb
 Imports System.Text.RegularExpressions
+Imports System.Threading.Tasks
 Imports QueryEditor.Queries
+
 Public Class DataBase
-
-#Region "Connection"
-
-#Region "Private Fields"
-    ''' <summary>the member that is responsible for connecting to the database </summary>
-    Private Con As New OleDbConnection
-#End Region
-
-
-    Sub SetConnectionString()
-        If Con IsNot Nothing AndAlso Con.State = ConnectionState.Open Then
-            Con.Close()
-        End If
-
-        Con.ConnectionString = GetConStr()
-
-    End Sub
-
-    ''' <summary>
-    ''' opens the database that calling instance is representing, 
-    ''' but it doen't populate its members with the info from the source
-    ''' </summary>
-    Public Function OpenDB() As Boolean
-        Try
-            If Con.State <> ConnectionState.Open Then
-
-                Con.Open()
-                Return True
-            End If
-        Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Exclamation, "Caution")
-            Return False
-        End Try
-    End Function
-
-    ''' <summary>
-    ''' closes the database that calling instance is representing, 
-    ''' if it's already closed then no procedure will be done
-    ''' </summary>
-    Public Function CloseDB() As Boolean
-        Try
-            If CBool(Con.State And Not ConnectionState.Closed) Then
-                Con.Close()
-                Return True
-            End If
-        Catch ex As Exception
-            MsgBox(ex.Message, MsgBoxStyle.Exclamation, "Caution")
-            Return False
-        End Try
-    End Function
-
-    ''' <summary>
-    ''' gets the connection string required to connect to the database ,
-    ''' connection string will be gathered from other instance members
-    ''' </summary>
-    Private Function GetConStr() As String
-
-        Dim pw = If(_PassWord = "", "", "Jet OLEDB:Database Password = " & _PassWord & ";")
-        Dim rtn = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=""" & _
-                _Path & """;" & pw
-
-        Return rtn
-
-    End Function
-
-#End Region
-
-#Region "Dealing With the DataBase Schema"
-
-#Region "Internally used variables and functions"
-
-    Private populated As Boolean = False
-
-    ''' <summary>
-    ''' fills the instace members with the info from the source
-    ''' </summary>
-    ''' <param name="sender">a value to determine the caller of this method</param>
-    ''' <remarks></remarks>
-    Private Sub populate(ByVal sender As Object)
-
-        Try
-            Con.Open()
-
-            _Tables = GetTables()
-            _Queries = GetQueries()
-
-            Con.Close()
-
-            _All_Names = From x In New String() {}
-
-            Dim AllObjects = _Tables.Union(_Queries) 'not we can't use Tables/Queries properties cuz populated Field is still False ....they will call Populate again 
-            Dim tmp0 As New List(Of String)
-            For Each T In AllObjects
-                Application.DoEvents()
-                tmp0.Add(T.TableName)
-                tmp0.AddRange(From C As DataColumn In T.Columns _
-                              Select C.ColumnName)
-            Next
-
-            _All_Names = From N In tmp0 Select N Distinct
-
-            populated = True
-
-        Catch ex As Exception
-            MsgBox(ex.Message)
-        End Try
-    End Sub
-
-#End Region
-
 #Region "Properties"
+    Public Property PassWord As String = ""
 
-    Private _PassWord As String = ""
-    ''' <summary>Gets and Sets the password of the calling instance </summary>
-    Public Property PassWord() As String
-        Get
-            Return _PassWord
-        End Get
-        Set(ByVal value As String)
-            _PassWord = value
-            Con.ConnectionString = GetConStr()
-            populated = False
-        End Set
+    Public Property Path As String = ""
+
+    Private ReadOnly Property ConnectionString As String
+    Get
+        Dim connectionBuilder As New OleDbConnectionStringBuilder
+        With connectionBuilder
+            .Provider = "Microsoft.ACE.OLEDB.12.0"
+            .DataSource = Path
+            .PersistSecurityInfo = False
+            '.Add("Connect Timeout", 15)
+            If PassWord.Length > 0 Then .Add("Jet OLEDB:Database Password", PassWord)
+        End With
+        
+        Return connectionBuilder.ToString()
+    End Get
     End Property
 
-    Private _Path As String = ""
-    ''' <summary>Gets and Sets the Path of the calling instance </summary>
-    Public Property Path() As String
-        Get
-            Return _Path
-        End Get
-        Set(ByVal value As String)
-            _Path = value
-            Con.ConnectionString = GetConStr()
-            populated = False
-        End Set
-    End Property
+    ''' <summary>Represents the Query we're working on</summary>
+    Public Property Query As New SqlQuery("")
 
-    Private _Tables As IEnumerable(Of DataTable)
+    Private _tables As IEnumerable(Of DataTable) = From t In New DataTable() {}
     ''' <summary>a list of all Tables Names in the calling instance</summary>
-    Public ReadOnly Property Tables() As IEnumerable(Of DataTable)
+    Public ReadOnly Property Tables As IEnumerable(Of DataTable)
         Get
-            If Not populated Then populate("Tables Property : if Not populated")
-
-            If _Tables Is Nothing Then
-                _Tables = From t In New DataTable() {}
-            End If
-
-            Return _Tables
+            'If Not _populated Then Populate()  '"Tables Property : if Not populated"
+            Return _tables
         End Get
     End Property
 
-    Private _Queries As IEnumerable(Of DataTable)
+    Private _queries As IEnumerable(Of DataTable) = From t In New DataTable() {}
+
     ''' <summary>a list of all Queries Names in the calling instance</summary>
-    Public ReadOnly Property Queries() As IEnumerable(Of DataTable)
+    Public ReadOnly Property Queries As IEnumerable(Of DataTable)
         Get
-            If Not populated Then populate("Queries Property : if Not populated")
-
-            If _Queries Is Nothing Then
-                _Queries = From t In New DataTable() {}
-            End If
-
-            Return _Queries
+            'If Not _populated Then populate()  '"Queries Property : if Not populated"
+            Return _queries
         End Get
     End Property
 
-    Private _All_Names As IEnumerable(Of String)
-    ''' <summary>
-    ''' a list of all Objects Names (Tables/Queries/Columns) in the calling instance
-    ''' this is gonna be used for faster DB Objects queries , 
-    ''' so it doesn't iterate Tables or Queries to get Columns Names
-    ''' </summary>
-    Public ReadOnly Property All_Names() As IEnumerable(Of String)
+    Private _tableCount As Integer
+    Public ReadOnly Property TableCount as Integer
+    Get
+        Return _tableCount
+    End Get
+    End Property
+
+    Private _queryCount As Integer
+    Public ReadOnly Property QueryCount as Integer
         Get
-            Return _All_Names
+            Return _queryCount
+        End Get
+    End Property
+
+    Private _allNames As IEnumerable(Of String)
+    ''' <summary>
+    '''     a list of all Objects Names (Tables/Queries/Columns) in the calling instance
+    '''     this is gonna be used for faster DB Objects queries ,
+    '''     so it doesn't iterate Tables or Queries to get Columns Names
+    ''' </summary>
+    Private ReadOnly Property AllNames As IEnumerable(Of String)
+        Get
+            Return _allNames
         End Get
     End Property
 
     ''' <summary>
-    ''' gets a list of DB Objects Aoutocomplete words for a given word
+    '''     gets a list of DB Objects Autocomplete words for a given word
     ''' </summary>
-    ''' <param name="Word">the words to search for Autocompletes</param>
-    Public ReadOnly Property GetAutoComplete(ByVal Word As String) As IEnumerable(Of String)
+    ''' <param name="word">the words to search for Autocomplete</param>
+    Public ReadOnly Property GetAutoComplete(word As String) As IEnumerable(Of String)
         Get
-
             If Path.Trim <> "" Then 'if DB is not Specified yet that means "DB Objects" are not available
-                Return From N In All_Names _
-                       Where N.StartsWith(Word, StringComparison.OrdinalIgnoreCase) _
-                       Select "[" & N & "]"
+                Return From n In AllNames _
+                    Where N.StartsWith(Word, StringComparison.OrdinalIgnoreCase) _
+                    Select "[" & N & "]"
             Else
                 Return (From x In New String() {})
 
             End If
-
         End Get
     End Property
+
 #End Region
-
-#Region "Subs And Functions"
-
-    Public Sub New(ByVal DBPath As String, ByVal DBPassword As String)
+    ''' <summary>
+    '''     Class Constructor.
+    ''' </summary>
+    ''' <param name="dbPath">Path to Database File.</param>
+    ''' <param name="dbPassword">Password to that database.</param>
+    Public Sub New(dbPath As String, dbPassword As String)
         MyBase.New()
-        Me.Path = DBPath
-        Me.PassWord = DBPassword
-        SetConnectionString()
-
+        Path = dbPath
+        PassWord = dbPassword
     End Sub
 
+    Public Async Function TestConnection() As Task(of Boolean)
+        using dbConnection = New OleDbConnection(ConnectionString())
+            Try
+                Await dbConnection.OpenAsync()
+            Catch ex As Exception
+                Debug.WriteLine(ex.Message)
+                Return False
+            End Try
+        End Using
+
+        Return True
+    End Function
+
+#Region "DataBase Schema"
+
+    'Private _populated As Boolean = False
+
     ''' <summary>
-    ''' a list of Queries in the calling instance (returned as DataTable Type)
+    '''     fills the instance members with the info from the source
     ''' </summary>
-    Private Function GetQueries() As IEnumerable(Of DataTable)
+    ''' <remarks></remarks>
+    Private Async Function Populate() As Task
+        _Tables = Await GetTables()
+        _Queries = Await GetQueries()
 
-        Dim Tbl As DataTable
-        Tbl = Con.GetOleDbSchemaTable(OleDbSchemaGuid.Procedures, _
-                                      New Object() {})
+        Try ' to join the data
+            _allNames = From x In New String() {}
 
+            Dim allObjects = _Tables.Union(_Queries) _
+            'not we can't use Tables/Queries properties cuz populated Field is still False ....they will call Populate again 
+            Dim tmp0 As New List(Of String)
+            For Each T In AllObjects
+                Dim dataColumns = T.Columns
+                tmp0.Add(T.TableName)
+                tmp0.AddRange(From thisColumn As DataColumn In dataColumns Select thisColumn.ColumnName)
+            Next
 
-        Dim Rslt0 = From Row As DataRow In Tbl.Rows _
-                   Where Not Row.Item("PROCEDURE_NAME").StartsWith("~") _
-                   Select GetDataTableSchema("[" & CType(Row.Item("PROCEDURE_NAME"), String) & "]")
+            _allNames = From n In tmp0 Select n=N Distinct
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        Finally
+            ' ???
+        End Try
+    End Function
 
+    ''' <summary>
+    '''     A list of Queries in the calling instance (returned as DataTable Type)
+    ''' </summary>
+    Private Async Function GetQueries() As Task(Of IEnumerable(Of DataTable))
+        Using dbConnection = New OleDbConnection(ConnectionString())
+            Await dbConnection.OpenAsync()
 
-        Tbl = Con.GetOleDbSchemaTable(OleDbSchemaGuid.Views, _
-                              New Object() {})
+            Dim procedureTable = dbConnection.GetOleDbSchemaTable(OleDbSchemaGuid.Procedures, New Object() {})
+            Dim procedures = From row As DataRow In procedureTable.Rows _
+                    Where Not Row.Item("PROCEDURE_NAME").StartsWith("~") _
+                    Select GetDataTableSchema("[" & CType(Row.Item("PROCEDURE_NAME"), String) & "]")
 
-        Dim Rslt1 = From Row As DataRow In Tbl.Rows _
+            Dim viewsTable = dbConnection.GetOleDbSchemaTable(OleDbSchemaGuid.Views, New Object() {})
+            Dim queryNames = From row As DataRow In viewsTable.Rows _
                     Select GetDataTableSchema("[" & CType(Row.Item("TABLE_NAME"), String) & "]")
+        
+            Dim queryList = procedures.Union(queryNames).ToList()
+            _queryCount = queryList.Count()
 
-
-        Return Rslt0.Union(Rslt1)
-
+            Return queryList
+        End Using
     End Function
 
-    '''<summary > a list of Talbes in the calling instance (returned as DataTable Type)</summary>
-    Private Function GetTables() As IEnumerable(Of DataTable)
+    ''' <summary> a list of Tables in the calling instance (returned as DataTable Type)</summary>
+    Private Async Function GetTables() As Task(Of IEnumerable(Of DataTable))
+        Using dbConnection = New OleDbConnection(ConnectionString())
+            Await dbConnection.OpenAsync()
 
-        Dim Tbl As DataTable
+            Dim tablesInfo = dbConnection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables_Info, New Object() {})
 
-        Tbl = Con.GetOleDbSchemaTable(OleDbSchemaGuid.Tables_Info, New Object() {})
+            Dim goodTablesTypes = New String() {"TABLE", "LINK", "PASS-THROUGH"} _
+            'I'm afraid there are more ,I didn't try all types , but I'll try to
 
-        Dim GoodTablesTypes = New String() {"TABLE", "LINK", "PASS-THROUGH"} 'I'm afraid there are more ,I didn't try all types , but I'll try to
+            Dim funGoodTableType = Function(tableType As String) _
+                    GoodTablesTypes.Contains(tableType)
 
-        Dim Fun_GoodTableType = Function(Table_Type As String) _
-                                   GoodTablesTypes.Contains(Table_Type)
+            'gets the TablesNames only
+            Dim tablesNames = From row As DataRow In tablesInfo.Rows _
+                    Where funGoodTableType(CType(Row.Item("TABLE_TYPE"), String)) _
+                    Select "[" & CType(Row.Item("TABLE_NAME"), String) & "]" Distinct
 
-        'gets the TablesNames only
-        Dim TablesNames = From Row As DataRow In Tbl.Rows _
-                          Where Fun_GoodTableType(CType(Row.Item("TABLE_TYPE"), String)) _
-                          Select "[" & CType(Row.Item("TABLE_NAME"), String) & "]" Distinct
+            'Now Fetch the Schema of tables
+            Dim tableSchema = From tblName As String In TablesNames _
+                    Select GetDataTableSchema(TblName)
+        
+            Dim tableList = tableSchema.ToList()
+            _tableCount = tableList.Count()
 
-
-        'Now Fetch the Schema of tables
-        Dim Rslt = From TblName As String In TablesNames _
-                   Select GetDataTableSchema(TblName)
-
-        Return Rslt
+            Return tableList
+        End Using
     End Function
 
     ''' <summary>
-    ''' re-fill instance members with a Info from the source
+    '''     re-fill instance members with a Info from the source
     ''' </summary>
-    Public Sub RefreshSchema()
-        populate("RefreshSchema")
-    End Sub
+    Public Async Function RefreshSchema() As Task
+        Await Populate()  '"RefreshSchema"        
+    End Function
 
 #End Region
 
-#End Region
-
-#Region "Dealing with the Data it self"
+#Region "Dealing with the Data itself"
 
     ''' <summary>Executes a given sql statement and returns the count of the affected records</summary>
-    ''' <param name="Query">the SqlQuery statement to execute</param>
-    ''' <param name="Errors">this will hold the errors msgs in case things didn't go right</param>
+    ''' <param name="commandQuery">the SqlQuery statement to execute</param>
     ''' <returns>count of the affected records</returns>
-    Public Function ExecuteSQLCommand(ByVal Query As SqlQuery, _
-                                      Optional ByRef Errors As String = "") As Long
-
+    Public Async Function ExecuteSqlCommand(commandQuery As SqlQuery) As Task(of Long)
         Dim count As Long
+        Using dbConnection = New OleDbConnection(ConnectionString())
+            Using dbCommand = New OleDbCommand(commandQuery.Sql, dbConnection)
+                If commandQuery.QueryParams IsNot Nothing AndAlso commandQuery.QueryParams.Count > 0 Then
+                    dbCommand.Parameters.Clear()
+                    For Each p In commandQuery.QueryParams
+                        dbCommand.Parameters.AddWithValue(p.Key, p.Value)
+                    Next
+                End If
 
-        Dim I_Opened_it As Boolean = False
+                Try 'to run the command
+                    count = Await dbCommand.ExecuteNonQueryAsync()
+                Catch ex As Exception
+                    Editor.ShowResults2MsgTab(ex.Message & Environment.NewLine)
+                Finally
+                    ' ???
+                End Try
 
-        If Con.State <> ConnectionState.Open Then
-            Con.Open()
-            I_Opened_it = True
-        End If
-
-        Dim cmd = New OleDbCommand(Query.Sql, Con)
-
-        Try
-            If Query.QueryParams IsNot Nothing AndAlso Query.QueryParams.Count > 0 Then
-                cmd.Parameters.Clear()
-                For Each p In Query.QueryParams
-                    cmd.Parameters.AddWithValue(p.Key, p.Value)
-                Next
-            End If
-            count = cmd.ExecuteNonQuery()
-        Catch ex As Exception
-            Errors = ex.Message
-
-        Finally
-            If I_Opened_it Then
-                Con.Close()
-            End If
-
-        End Try
-
-        Return count
-
+                Return count
+            End Using
+        End Using
     End Function
 
     ''' <summary>Returns a DataTable instance that holds the returned data of a specified Sql statement</summary>
-    ''' <param name="Query">SqlQuery statement to execute</param>
-    ''' <param name="Errors">this will hold the errors msgs in case things didn't go right</param>
-    ''' <param name="TableName">a value to be set to the name of the returned table</param>
-    Public Function GetDataTable(ByVal Query As SqlQuery, _
-                                 Optional ByRef Errors As String = "", _
-                                 Optional ByVal TableName As String = "Table") As DataTable
+    ''' <param name="thisQuery">SqlQuery statement to execute</param>
+    ''' <param name="tableName">a value to be set to the name of the returned table</param>
+    Public Async Function GetDataTable(thisQuery As SqlQuery, Optional ByVal tableName As String = "Table") As Task(Of DataTable)
+        Using dbConnection = New OleDbConnection(ConnectionString())
+            Using dbCommand = New OleDbCommand(thisQuery.Sql, dbConnection)
+                Using dataAdapter = New OleDbDataAdapter
+                    With dataAdapter
+                        .SelectCommand = dbCommand
+                        .ContinueUpdateOnError = True
+                        .AcceptChangesDuringFill = True
+                        .AcceptChangesDuringUpdate = True
+                        .ResetFillLoadOption()
+                        '.GetFillParameters()
+                    End With
 
-        Dim cmd = New OleDbCommand(Query.Sql, Con)
+                    dataAdapter.SelectCommand = dbCommand
+                    Dim currentDataSet As New DataSet
+                    Dim resultTable As New DataTable(TableName)
 
-        Dim da As New OleDb.OleDbDataAdapter
-        Dim ds As New DataSet
-        Dim dt As New DataTable(TableName)
+                    ' What is happening here? cmd is never used after it is modified?
+                    If thisQuery.QueryParams IsNot Nothing AndAlso thisQuery.QueryParams.Count > 0 Then
+                        dbCommand.Parameters.Clear()
+                        For Each p In thisQuery.QueryParams
+                            dbCommand.Parameters.AddWithValue(p.Key, p.Value)
+                        Next
+                    End If
 
-        Try
-            da.SelectCommand = cmd
-            If Query.QueryParams IsNot Nothing AndAlso Query.QueryParams.Count > 0 Then
-                cmd.Parameters.Clear()
-                For Each p In Query.QueryParams
-                    cmd.Parameters.AddWithValue(p.Key, p.Value)
-                Next
-            End If
+                    Try ' to get the data
+                        Await Task.Run(Sub() dataAdapter.Fill(currentDataSet, TableName))
+                    Catch ex As OleDbException
+                        Editor.ShowResults2MsgTab(ex.Message)
+                    End Try
 
-            da.Fill(ds, TableName)
+                    If currentDataSet.Tables.Count > 0 Then
+                        resultTable = currentDataSet.Tables(0)
+                        resultTable.TableName = TableName
+                    End If
 
-            If ds.Tables.Count > 0 Then
-                dt = ds.Tables(0)
-                dt.TableName = TableName
-            End If
-
-        Catch ex As Data.OleDb.OleDbException
-            Errors = ex.Message
-        End Try
-
-        cmd.Dispose()
-        cmd = Nothing
-        Return dt
+                    Return resultTable
+                End Using
+            End Using
+        End Using
     End Function
 
-    ''' <summary>Returns a DataTable instance that holds no data , it has only the schema of the specified exised Table Name</summary>
-    ''' <param name="Errors">this will hold the errors msgs in case things didn't go right</param>
-    ''' <param name="TableName">the name of the table to return the schema of</param>
-    Public Function GetDataTableSchema(ByVal TableName As String, _
-                                       Optional ByRef Errors As String = "" _
-                                       ) As DataTable
+    ''' <summary>Returns a DataTable instance that holds no data, it has only the schema of the specified existed Table Name</summary>
+    ''' <param name="tableName">the name of the table to return the schema of</param>
+    Private Function GetDataTableSchema(tableName As String) As DataTable
+        Using dbConnection = New OleDbConnection(ConnectionString())
+            Using dbCommand = New OleDbCommand("SELECT * FROM " & tableName, dbConnection)
+                Using dataAdapter = New OleDbDataAdapter
+                    With dataAdapter
+                        .SelectCommand = dbCommand
+                        .ContinueUpdateOnError = True
+                        .AcceptChangesDuringFill = True
+                        .AcceptChangesDuringUpdate = True
+                        .ResetFillLoadOption()
+                        '.GetFillParameters()
+                    End With
 
+                    Dim theDataSet As New DataSet                    
+                    Try ' to get the data
+                        'dataAdapter.Fill(theDataSet, tableName)
+                        dataAdapter.FillSchema(theDataSet, SchemaType.Source)  ' Produces memory exception?
+                    Catch ex As Exception
+                        Debug.Print(ex.Message)
+                    End Try
 
-        Dim cmd = New OleDbCommand("Select * From " & TableName, Con)
+                    Dim firstTable As New DataTable()
+                    If theDataSet.Tables.Count > 0 Then
+                        firstTable = theDataSet.Tables(0)
+                    End If
 
-        Dim da As New OleDb.OleDbDataAdapter
-        Dim ds As New DataSet
-        Dim dt As New DataTable()
+                    firstTable.TableName = Regex.Replace(tableName, "\[|\]", "")
 
-        Try
-
-            da.SelectCommand = cmd
-            da.FillSchema(ds, SchemaType.Source)
-
-            If ds.Tables.Count > 0 Then
-                dt = ds.Tables(0)
-            End If
-
-            dt.TableName = Regex.Replace(TableName, "\[|\]", "")
-        Catch ex As Data.OleDb.OleDbException
-            Errors = ex.Message
-        End Try
-
-        Return dt
+                    Return firstTable
+                End Using
+            End Using
+        End Using
     End Function
 
 #End Region
 
 #Region "Overrided Subs"
 
-    Protected Overrides Sub Finalize()
-        If Con IsNot Nothing Then
-            If CBool(Con.State And ConnectionState.Open) Then
-                Con.Close()
-            End If
+    'Protected Overrides Sub Finalize()
+    '    If _connection IsNot Nothing Then
+    '        If CBool(_connection.State And ConnectionState.Open) Then
+    '            _connection.Close()
+    '        End If
 
-            Con = Nothing
-        End If
+    '        _connection = Nothing
+    '    End If
 
+    '    MyBase.Finalize()
+    'End Sub
 
-        MyBase.Finalize()
-    End Sub
 #End Region
-
 End Class

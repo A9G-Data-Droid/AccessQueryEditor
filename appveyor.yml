@@ -1,0 +1,30 @@
+version: 0.1.{build}
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+  - next
+image: Visual Studio 2017
+configuration: Release
+platform: x86
+build:
+  verbosity: normal
+after_build:
+
+- cmd: >-
+    cd && dir
+    
+artifacts:
+- path: QueryEditor\bin\x86\Release\*
+  name: Binary
+deploy:
+- provider: GitHub
+  description: I am testing automated releases using AppVeyor
+  auth_token:
+    secure: 1Dzj/ZfH3EBVsuVHw0Ez/zNxIql3G8gwr9iaO2Z1Q1IeH3xHRPzGmBQljDgsdyLL
+  artifact: Binary
+  draft: true
+  prerelease: true
+  on:
+     branch: master 
