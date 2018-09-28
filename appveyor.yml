@@ -11,20 +11,15 @@ platform: x86
 build:
   verbosity: normal
 artifacts:
-- path: bin\x86\Release\*
-  name: Full Build
+- path: bin\x86\Release\QueryEditor.exe.config
+  name: Settings
+- path: bin\x86\Release\QueryEditor.exe
+  name: Binary
 deploy:
 - provider: GitHub
   description: I am testing automated releases using AppVeyor
   auth_token:
     secure: 1Dzj/ZfH3EBVsuVHw0Ez/zNxIql3G8gwr9iaO2Z1Q1IeH3xHRPzGmBQljDgsdyLL
-  artifact: Full Build
-notifications:
-- provider: Email
-  to:
-  - akauffman@cet.aero
-  subject: Boo! AppVeyor for AccessQueryEditor
-  message: Build failure
-  on_build_success: false
-  on_build_failure: true
-  on_build_status_changed: false
+  artifact: Settings, Binary
+  draft: true
+  prerelease: true
