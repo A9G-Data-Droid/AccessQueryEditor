@@ -10,8 +10,17 @@ configuration: Release
 platform: x86
 build:
   verbosity: normal
+after_build:
+
+- cmd: >-
+
+    DIR "%APPVEYOR_BUILD_FOLDER%"
+
+    cd && dir
+
+    DIR bin\x86\Release\*.exe
 artifacts:
-- path: bin\x86\Release\
+- path: bin\x86\Release\*.exe
   name: Binary
 deploy:
 - provider: GitHub
@@ -21,3 +30,5 @@ deploy:
   artifact: Binary
   draft: true
   prerelease: true
+  on:
+     branch: master 
