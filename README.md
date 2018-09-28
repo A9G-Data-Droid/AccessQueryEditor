@@ -1,10 +1,11 @@
-# AccessQueryEditor
+# AccessQueryEditor   [![Build status](https://ci.appveyor.com/api/projects/status/s2fl45atmw06so0r/branch/master?svg=true)](https://ci.appveyor.com/project/A9G-Data-Droid/accessqueryeditor/branch/master)
+
 Fork of: MS Access Databases Queries Editor by Yasser Daheek and Sean Ewington
 Found at: https://www.codeproject.com/Articles/37769/MS-Access-Databases-Queries-Editor
 
-I hate CodeProject so I made a clone over here on GitHub. I might even make some updates to this fork of the code if I find the time.
+I have begun to modernize this code base to work with Access 2016. I am making improvements to as much as I can as I go along. 
 
-What follows is a text dump of the description from CodeProject. I want to clean that up later too.
+What follows is a text dump of the description from CodeProject. (I would like to rewrite this eventually)
 
 ## Introduction
 Try to create a Union query by MS Access, or an Update one, or an Insert one………..
