@@ -6,7 +6,7 @@ deploy:
 - provider: GitHub
   description: Wouldn't it be great if binaries were magically available for download?
   auth_token:
-    secure: 176TIG6PNLpTB9vDUPfJ6RQUkgTot23O8GckvEuKXYQtIG+2urE0OGTc7v0y93XSN9E7EEAxsvTVgrJL/7+V5C4VX8TwICzHd8bbhmt2swE=
+    secure: 1Dzj/ZfH3EBVsuVHw0Ez/zNxIql3G8gwr9iaO2Z1Q1IeH3xHRPzGmBQljDgsdyLL
 notifications:
 - provider: Email
   to:
